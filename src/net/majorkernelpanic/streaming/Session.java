@@ -35,10 +35,15 @@ import net.majorkernelpanic.streaming.gl.SurfaceView;
 import net.majorkernelpanic.streaming.rtsp.RtspClient;
 import net.majorkernelpanic.streaming.video.VideoQuality;
 import net.majorkernelpanic.streaming.video.VideoStream;
+import android.app.Activity;
+import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.util.Log;
+import android.view.Surface;
+import android.view.SurfaceHolder;
 
 /**
  * You should instantiate this class with the {@link SessionBuilder}.<br />
@@ -111,6 +116,7 @@ public class Session {
 
 	private Callback mCallback;
 	private Handler mMainHandler;
+	private Camera.PreviewCallback mPreview;
 
 	private Handler mHandler;
 
@@ -128,6 +134,8 @@ public class Session {
 		mTimestamp = (uptime/1000)<<32 & (((uptime-((uptime/1000)*1000))>>32)/1000); // NTP timestamp
 		mOrigin = "127.0.0.1";
 	}
+	
+	public Camera.Parameters getCameraParams() { return mVideoStream.getCurrentCamera().getParameters(); }
 
 	/**
 	 * The callback interface you need to implement to get some feedback
@@ -259,6 +267,7 @@ public class Session {
 			mVideoStream.setVideoQuality(quality);
 		}
 	}
+	
 
 	/**
 	 * Sets a Surface to show a preview of recorded media (video). <br />
@@ -276,6 +285,13 @@ public class Session {
 		});
 	}
 
+	
+	public void setPreviewCallback(Camera.PreviewCallback preview) {
+		if (mVideoStream != null)
+			mVideoStream.setPreviewCallback(preview);
+	}
+
+	
 	/** 
 	 * Sets the orientation of the preview. <br />
 	 * You can call this method at any time and changes will take 
@@ -287,6 +303,13 @@ public class Session {
 			mVideoStream.setPreviewOrientation(orientation);
 		}
 	}	
+	
+	
+	public void rotateCamera(int orientation, int width, int height) {
+		if (mVideoStream != null) {
+			mVideoStream.rotateCamera(orientation, width, height);
+		}
+	}
 
 	/** 
 	 * Sets the configuration of the stream. <br />
@@ -621,6 +644,8 @@ public class Session {
 		return mVideoStream != null ? mVideoStream.getCamera() : 0;
 
 	}
+	
+	public Camera getCurrentCamera() { return mVideoStream != null ? mVideoStream.getCurrentCamera() : null; }
 
 	/** 
 	 * Toggles the LED of the phone if it has one.

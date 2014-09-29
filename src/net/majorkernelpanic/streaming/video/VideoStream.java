@@ -36,6 +36,7 @@ import net.majorkernelpanic.streaming.hw.EncoderDebugger;
 import net.majorkernelpanic.streaming.hw.NV21Convertor;
 import net.majorkernelpanic.streaming.rtp.MediaCodecInputStream;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.hardware.Camera;
@@ -68,6 +69,7 @@ public abstract class VideoStream extends MediaStream {
 	protected Camera mCamera;
 	protected Thread mCameraThread;
 	protected Looper mCameraLooper;
+	protected Camera.PreviewCallback mPreview;
 
 	protected boolean mCameraOpenedManually = true;
 	protected boolean mFlashEnabled = false;
@@ -144,6 +146,10 @@ public abstract class VideoStream extends MediaStream {
 	public int getCamera() {
 		return mCameraId;
 	}
+	
+	public Camera getCurrentCamera() {
+		return mCamera;
+	}
 
 	/**
 	 * Sets a Surface to show a preview of recorded media (video). 
@@ -176,6 +182,10 @@ public abstract class VideoStream extends MediaStream {
 		}
 	}
 
+	public synchronized void setPreviewCallback(Camera.PreviewCallback preview) {
+		mPreview = preview;
+	}
+	
 	/** Turns the LED on or off if phone has one. */
 	public synchronized void setFlashState(boolean state) {
 		// If the camera has already been opened, we apply the change immediately
@@ -579,15 +589,20 @@ public abstract class VideoStream extends MediaStream {
 
 			try {
 
+				// Set highest quality
+				Parameters parameters = mCamera.getParameters();
+				
 				// If the phone has a flash, we turn it on/off according to mFlashEnabled
 				// setRecordingHint(true) is a very nice optimization if you plane to only use the Camera for recording
-				Parameters parameters = mCamera.getParameters();
 				if (parameters.getFlashMode()!=null) {
 					parameters.setFlashMode(mFlashEnabled?Parameters.FLASH_MODE_TORCH:Parameters.FLASH_MODE_OFF);
 				}
 				parameters.setRecordingHint(true);
+	            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+	    		parameters.setPreviewFormat(mCameraImageFormat);
 				mCamera.setParameters(parameters);
 				mCamera.setDisplayOrientation(mOrientation);
+				mCamera.setPreviewCallback(mPreview);
 
 				try {
 					if (mMode == MODE_MEDIACODEC_API_2) {
@@ -607,7 +622,7 @@ public abstract class VideoStream extends MediaStream {
 
 		}
 	}
-
+	
 	protected synchronized void destroyCamera() {
 		if (mCamera != null) {
 			if (mStreaming) super.stop();
@@ -629,26 +644,27 @@ public abstract class VideoStream extends MediaStream {
 		
 		// The camera is already correctly configured
 		if (mUpdated) return;
-		
+
 		if (mPreviewStarted) {
 			mPreviewStarted = false;
 			mCamera.stopPreview();
 		}
 
 		Parameters parameters = mCamera.getParameters();
-		mQuality = VideoQuality.determineClosestSupportedResolution(parameters, mQuality);
-		int[] max = VideoQuality.determineMaximumSupportedFramerate(parameters);
+		mQuality = mRequestedQuality;
 		
-		double ratio = (double)mQuality.resX/(double)mQuality.resY;
-		mSurfaceView.requestAspectRatio(ratio);
-		
-		parameters.setPreviewFormat(mCameraImageFormat);
-		parameters.setPreviewSize(mQuality.resX, mQuality.resY);
-		parameters.setPreviewFpsRange(max[0], max[1]);
+		//Log.d("ZIGGEO", "Updating camera, preview: " + mQuality.resX + "h: " + mQuality.resY);
 
+		//parameters.setPreviewSize(mQuality.resX, mQuality.resY);
+		//parameters.setPictureSize(mQuality.resX, mQuality.resY);
+		parameters.setRotation(mOrientation);
+		mSurfaceView.requestAspectRatio((double)mQuality.resX/(double)mQuality.resY);
+//		parameters.setPreviewFpsRange(max[0], max[1]);
+		
 		try {
 			mCamera.setParameters(parameters);
 			mCamera.setDisplayOrientation(mOrientation);
+			mCamera.setPreviewCallback(mPreview);
 			mCamera.startPreview();
 			mPreviewStarted = true;
 			mUpdated = true;
@@ -657,6 +673,33 @@ public abstract class VideoStream extends MediaStream {
 			throw e;
 		}
 	}
+	
+	public void rotateCamera(int orientation, int width, int height) {            
+		
+		if (mCamera == null) return;
+		
+		if (mPreviewStarted) {
+			mPreviewStarted = false;
+			mCamera.stopPreview();
+		}
+
+        Parameters parameters = mCamera.getParameters();
+        VideoQuality vq = VideoQuality.determineClosestSupportedResolution(parameters, new VideoQuality(width, height));
+		parameters.setPreviewSize(vq.resX, vq.resY);
+        
+		try {
+//			mCamera.setParameters(parameters);
+			mCamera.setDisplayOrientation(orientation);
+			mCamera.startPreview();
+			mPreviewStarted = true;
+			mUpdated = true;
+		} catch (RuntimeException e) {
+			destroyCamera();
+			throw e;
+		}
+		
+	}
+ 
 
 	protected void lockCamera() {
 		if (mUnlocked) {

@@ -33,6 +33,7 @@ import net.majorkernelpanic.streaming.video.H264Stream;
 import net.majorkernelpanic.streaming.video.VideoQuality;
 import net.majorkernelpanic.streaming.video.VideoStream;
 import android.content.Context;
+import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.preference.PreferenceManager;
 
@@ -75,6 +76,7 @@ public class SessionBuilder {
 	private String mOrigin = null;
 	private String mDestination = null;
 	private Session.Callback mCallback = null;
+	private Camera.PreviewCallback mPreview = null;
 
 	// Removes the default public constructor
 	private SessionBuilder() {}
@@ -140,6 +142,7 @@ public class SessionBuilder {
 			video.setFlashState(mFlash);
 			video.setVideoQuality(mVideoQuality);
 			video.setSurfaceView(mSurfaceView);
+			video.setPreviewCallback(mPreview);
 			video.setPreviewOrientation(mOrientation);
 			video.setDestinationPorts(5006);
 		}
@@ -201,6 +204,11 @@ public class SessionBuilder {
 
 	public SessionBuilder setFlashEnabled(boolean enabled) {
 		mFlash = enabled;
+		return this;
+	}
+	
+	public SessionBuilder setPreviewCallback(Camera.PreviewCallback preview) {
+		mPreview = preview;
 		return this;
 	}
 
