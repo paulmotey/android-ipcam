@@ -657,6 +657,8 @@ public abstract class VideoStream extends MediaStream {
 
 		//parameters.setPreviewSize(mQuality.resX, mQuality.resY);
 		//parameters.setPictureSize(mQuality.resX, mQuality.resY);
+		parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+
 		parameters.setRotation(mOrientation);
 		mSurfaceView.requestAspectRatio((double)mQuality.resX/(double)mQuality.resY);
 //		parameters.setPreviewFpsRange(max[0], max[1]);
