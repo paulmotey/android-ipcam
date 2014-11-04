@@ -655,8 +655,10 @@ public abstract class VideoStream extends MediaStream {
 		
 		//Log.d("ZIGGEO", "Updating camera, preview: " + mQuality.resX + "h: " + mQuality.resY);
 
-		//parameters.setPreviewSize(mQuality.resX, mQuality.resY);
-		//parameters.setPictureSize(mQuality.resX, mQuality.resY);
+		parameters.setPreviewSize(mQuality.resX, mQuality.resY);
+		// Get picture size closest to preview size
+		VideoQuality closestPictureSize = VideoQuality.determineClosestSupportedResolution(parameters.getSupportedPictureSizes(), mQuality);
+		parameters.setPictureSize(closestPictureSize.resX, closestPictureSize.resY);
 		parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
 
 		parameters.setRotation(mOrientation);
@@ -686,7 +688,7 @@ public abstract class VideoStream extends MediaStream {
 		}
 
         Parameters parameters = mCamera.getParameters();
-        VideoQuality vq = VideoQuality.determineClosestSupportedResolution(parameters, new VideoQuality(width, height));
+        VideoQuality vq = VideoQuality.determineClosestSupportedResolution(parameters.getSupportedPreviewSizes(), new VideoQuality(width, height));
 		parameters.setPreviewSize(vq.resX, vq.resY);
         
 		try {

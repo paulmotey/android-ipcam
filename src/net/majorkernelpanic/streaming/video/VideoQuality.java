@@ -119,11 +119,10 @@ public class VideoQuality {
 	 * Checks if the requested resolution is supported by the camera.
 	 * If not, it modifies it by supported parameters. 
 	 **/
-	public static VideoQuality determineClosestSupportedResolution(Camera.Parameters parameters, VideoQuality quality) {
+	public static VideoQuality determineClosestSupportedResolution(List<Size> supportedSizes, VideoQuality quality) {
 		VideoQuality v = quality.clone();
 		int minDist = Integer.MAX_VALUE;
 		String supportedSizesStr = "Supported resolutions: ";
-		List<Size> supportedSizes = parameters.getSupportedPreviewSizes();
 		for (Iterator<Size> it = supportedSizes.iterator(); it.hasNext();) {
 			Size size = it.next();
 			supportedSizesStr += size.width+"x"+size.height+(it.hasNext()?", ":"");
