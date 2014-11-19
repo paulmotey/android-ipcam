@@ -2,9 +2,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="cz.janchvala.android.ipcamera.ui.activity.MainActivity">
+
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/mi_activity_main_server_start_stop"
         android:orderInCategory="100"
+        android:icon="@drawable/ic_cast_white_36dp"
+        android:title="@string/start_server"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/mi_activity_main_settings"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_settings_applications_white_36dp"
         android:title="@string/action_settings"
         app:showAsAction="ifRoom" />
+
 </menu>

@@ -3,4 +3,5 @@
     <color name="toolbarPrimaryColor">#4CAF50</color>
     <color name="toolbarPrimaryDarkColor">#388E3C</color>
     <color name="toolbarAccentColor">#DE9B61</color>
+    <color name="white">#FFFFFF</color>
 </resources>

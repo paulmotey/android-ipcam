@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cz.janchvala.android.ipcamera">
+    package="cz.janchvala.android.ipcamera" >
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -12,21 +13,26 @@
 
     <application
         android:name=".Application_"
-        android:largeHeap="true"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AndroidIpApplicationTheme"
-        >
-        <activity android:name="cz.janchvala.android.ipcamera.ui.activity.MainActivity_"
-            android:label="@string/title_activity_main">
+        android:largeHeap="true"
+        android:theme="@style/AndroidIpApplicationTheme" >
+        <activity
+            android:name=".ui.activity.MainActivity_"
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <service android:name="net.majorkernelpanic.streaming.rtsp.RtspServer" />
+        <activity
+            android:name=".ui.activity.ToolbarPreferenceActivity_"
+            android:label="@string/app_name" >
+        </activity>
+
+        <service android:name=".server.AndroidIpRtspServer" />
     </application>
 
 </manifest>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/pref_header_server">
+
+        <EditTextPreference
+            android:defaultValue="http://10.0.0.12:8080"
+            android:dialogTitle="@string/pref_header_server"
+            android:key="@string/cdn_server_url"
+            android:title="@string/pref_header_server" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -21,5 +21,49 @@
 -keepattributes *Annotation*
 -keep class cz.janchvala.android.** { *; }
 
+
+### Spring for Android
+-dontwarn org.springframework.http.**
+
+
 ### AndroidAnnotations
 -dontwarn org.androidannotations.api.rest.**
+
+
+### Jackson
+-dontwarn com.fasterxml.jackson.databind.**
+
+-keepattributes EnclosingMethod, Signature
+-keepnames class com.fasterxml.jackson.** { *; }
+
+-keep public class cz.janchvala.android.** {
+  public void set*(***);
+  public *** get*();
+}
+
+
+### Guava
+-dontwarn javax.annotation.**
+-dontwarn javax.inject.**
+-dontwarn sun.misc.Unsafe
+-dontwarn com.google.common.collect.MinMaxPriorityQueue
+
+-keepclasseswithmembers public class * {
+    public static void main(java.lang.String[]);
+}
+
+
+# ORMLite
+-keep class com.j256.**
+-keepclassmembers class com.j256.** { *; }
+-keep enum com.j256.**
+-keepclassmembers enum com.j256.** { *; }
+-keep interface com.j256.**
+-keepclassmembers interface com.j256.** { *; }
+
+
+## EventBus
+-keepclassmembers class ** {
+    public void onEvent*(**);
+}
+
