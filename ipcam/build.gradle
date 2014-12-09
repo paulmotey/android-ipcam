@@ -69,7 +69,8 @@ android {
  */
 apt {
     arguments {
-        androidManifestFile variant.processResources.manifestFile
+        androidManifestFile variant.outputs[0].variantOutputData.processResourcesTask.manifestFile
+        // If you're using Android NBS flavors you should use the following line instead of hard-coded packageName
         resourcePackageName android.defaultConfig.applicationId
 
         trace true
